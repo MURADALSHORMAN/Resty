@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import JSONPretty from "react-json-prettify";
-import Loading from "../Loading";
+import Loading from "../loading";
 function Results(props) {
   const [loading, setLoading] = useState(true);
   const [render, setRender] = useState(false);
