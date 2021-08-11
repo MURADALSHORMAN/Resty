@@ -40,7 +40,7 @@ function Form(props) {
         <label>
           <span>BODY: </span>
         
-          <textarea id="body" name="body" rows="4" cols="50" onChange={handelBody} ></textarea>
+          <textarea id="body" name="body" rows="4" cols="50"></textarea>
         </label>
         <label className="methods">
           <input type="button" value="GET" id="GET" onClick={handelMethod} />
