@@ -37,3 +37,4 @@ netlify deployment
 
 * to test the app, use in termintal
    * ``` npm test ```
+
