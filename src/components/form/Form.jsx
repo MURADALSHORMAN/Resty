@@ -1,65 +1,48 @@
-import React from 'react';
-import axios from 'axios';
 import { useState } from 'react';
+import uuid from 'react-uuid';
 import './form.scss';
 
 function Form(props) {
-  const [url, seturl] = useState('https://pokeapi.co/api/v2/pokemon');
   const [method, setMethod] = useState('get');
-  const [textArea, settextArea] = useState(false);
   const [request, setrequest] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios({
-        method: method,
-        url: url,
-        data: {},
-      });
-      const formData = {
-        method: method,
-        url: url,
-      };
-      props.handleApiCall(res.headers, res.data, formData, request);
-    } catch (error) {
-      console.error(error);
-    }
+  function handleSubmit(event) {
+    event.preventDefault();
+    const formData = {
+      id: uuid(),
+      method: method,
+      url: event.target.url.value,
+    };
+    if (method === 'get' || method === 'delete') props.handleApiCall(formData);
+    if (method === 'post' || method === 'put')
+      props.handleApiCall(formData, request);
+  }
+
+  const methodHandler = (event) => {
+    setMethod(event.target.id);
   };
 
-
-  const methodHandler = async (event) => {
-    await setMethod(event.target.id);
-    settextArea(false);
-  };
-
-  const textAreaHandler = async (event) => {
-    settextArea(true);
-    await setMethod(event.target.id);
-  };
-
-  const requestHandler = (event) => {
+  const textAreaHandler = (event) => {
     setrequest(event.target.value);
   };
-
 
   return (
     <>
       <form onSubmit={handleSubmit}>
         <label>
           <span>URL: </span>
-          <input onChange = {(event) => seturl(event.target.value)} name="url" type="text" />
-          <button data-testid="submitData" type="submit">GO!</button>
+          <input name="url" type="text" />
+          <button type="submit">GO!</button>
         </label>
         <label className="methods">
-          <button onClick = {methodHandler} id="get">GET</button>
-          <button onClick = {textAreaHandler} id="post">POST</button>
-          <button onClick = {textAreaHandler} id="put">PUT</button>
-          <button onClick = {methodHandler} id="delete">DELETE</button>
+          <button id="get" onClick={(event) => methodHandler(event)}> GET </button>
+          <button id="post" onClick={(event) => methodHandler(event)}> POST </button>
+          <button id="put" onClick={(event) => methodHandler(event)}> PUT </button>
+          <button id="delete" onClick={(event) => methodHandler(event)}> DELETE </button>
         </label>
-        {textArea &&
-          <textarea onChange = {requestHandler} cols="50" rows="5"></textarea>
-        }
+        {(method === 'post' || method === 'put') && (
+          <textarea cols="60" rows="5" placeholder="{'key': 'value'}" onChange={textAreaHandler}></textarea>
+        )}
       </form>
     </>
   );

@@ -1,42 +1,64 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import { BeatLoader } from 'react-spinners';
+import axios from 'axios';
 import './app.scss';
 
 import Header from './components/header/Headers';
 import Footer from './components/footer/Footer';
 import Form from './components/form/Form';
 import Results from './components/results/Results';
+import History from './components/history/History';
+import {
+  initialState,
+  historyReducer,
+  historyAction,
+} from './components/action/Actions';
 
 function App() {
+  const [data, setData] = useState(null);
+  const [requestParams, setRequestParams] = useState({});
+  const [requestBody, setRequestBody] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(historyReducer, initialState);
 
-  const [data, setdata] = useState(null);
-  const [requestParams, setrequestParams] = useState({});
-  const [loading, setloading] = useState(true);
-  const [history, sethistory] = useState(false);
-  const [headers, setheaders] = useState('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(async () => {
+    if (requestParams.url) {
+      if (requestBody) {
+        const data = await axios({
+          method: requestParams.method,
+          url: requestParams.url,
+          bodyData:JSON.parse(requestBody)
+        });
+        setData(data);
+        setLoading(false);
+        dispatch(historyAction(requestParams));
+      } else {
+        const data = await axios({
+          method: requestParams.method,
+          url: requestParams.url
+        });
+        setData(data);
+        setLoading(false);
+        dispatch(historyAction(requestParams));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestParams]);
 
-  function callApi(headers, results, formData) {
-    setdata(results);
-    setheaders(headers);
-    setrequestParams(formData);
-    setloading(false);
-    sethistory(true);
-  };
-
+  async function callApi(formData, requestBody) {
+    setLoading(true);
+    setRequestBody(requestBody);
+    setRequestParams(formData);
+  }
 
   return (
     <React.Fragment>
       <Header />
-      <h3>History</h3>
-      {history &&
-      <div className = 'history'>
-        <button>{requestParams.method}</button>
-        <h4>URL: {requestParams.url}</h4>
-      </div>
-      }
+      {state.history.length ? <History history={state.history} /> : null}
       <Form handleApiCall={callApi} />
-      {loading ? <BeatLoader loading/> : <Results data={{results: data, headers:headers}} />}
+      {loading ? <BeatLoader loading /> : <Results data={data} />}
       <Footer />
     </React.Fragment>
   );

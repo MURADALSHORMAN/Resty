@@ -12,7 +12,7 @@ function Results(props) {
             <h2>Headers:</h2>
             <JSONPretty className = 'jsonData' data={props.data.headers} />
             <h2>Results:</h2>
-            <JSONPretty className = 'jsonData' data={props.data} />
+            <JSONPretty className = 'jsonData' data={props.data.data} />
           </>
         )}
       </div>
