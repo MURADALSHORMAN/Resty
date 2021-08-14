@@ -72,7 +72,7 @@ netlify deployment
 
 ### Lab 29
 netlify deployment
-### [Deployment link]https://app.netlify.com/sites/trusting-cori-d51f1a/deploys/611812c8fc2c0b103e6c66d2)
+### [Deployment link](https://app.netlify.com/sites/trusting-cori-d51f1a/deploys/611812c8fc2c0b103e6c66d2)
 
 #### Using useReducer instead of class state
 
