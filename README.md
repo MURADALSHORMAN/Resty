@@ -3,6 +3,7 @@
 
 ### Lab 26
 This app to explain how to convert class react component to function react component
+### [Deployment link](https://611810968c682188c259f3fa--stoic-stonebraker-7d6d18.netlify.app/)
 
 sandbox deployment
 
