@@ -72,7 +72,7 @@ netlify deployment
 
 ### Lab 29
 netlify deployment
-### [Deployment link](https://61181183d7c0cf31c62f06c5--suspicious-roentgen-a24ccc.netlify.app/)
+### [Deployment link]https://app.netlify.com/sites/trusting-cori-d51f1a/deploys/611812c8fc2c0b103e6c66d2)
 
 #### Using useReducer instead of class state
 
