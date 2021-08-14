@@ -1,81 +1,67 @@
-import React from "react";
+import React from 'react';
+import { useState, useEffect, useReducer } from 'react';
+import { BeatLoader } from 'react-spinners';
+import axios from 'axios';
+import './app.scss';
 
-import "./app.scss";
+import Header from './components/header/Headers';
+import Footer from './components/footer/Footer';
+import Form from './components/form/Form';
+import Results from './components/results/Results';
+import History from './components/history/History';
+import {
+  initialState,
+  historyReducer,
+  historyAction,
+} from './components/action/Actions';
 
-// Let's talk about using index.js and some other name in the component folder
-// There's pros and cons for each way of doing this ...
-import Header from "./components/header";
-import Footer from "./components/footer";
-import Form from "./components/form";
-import Results from "./components/results";
+function App() {
+  const [data, setData] = useState(null);
+  const [requestParams, setRequestParams] = useState({});
+  const [requestBody, setRequestBody] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(historyReducer, initialState);
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: null,
-      requestParams: {},
-      headers: "",
-      shown: false,
-    };
-  }
-
-  callApi = async (requestParams) => {
-    console.log(requestParams);
-
-    if (requestParams.method === "POST" || requestParams.method === "PUT" ||
-    requestParams.method === "DELETE") {
-      try {
-        const response = await fetch(requestParams.url, {
-          method: `${requestParams.method}`,
-          mode: "cors",
-          redirect: "follow",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestParams.body),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(async () => {
+    if (requestParams.url) {
+      if (requestBody) {
+        const data = await axios({
+          method: requestParams.method,
+          url: requestParams.url,
+          bodyData:JSON.parse(requestBody)
         });
-        const data = await response.json();
-        this.setState({ data });
-      } catch (error) {
-        console.log(error);
+        setData(data);
+        setLoading(false);
+        dispatch(historyAction(requestParams));
+      } else {
+        const data = await axios({
+          method: requestParams.method,
+          url: requestParams.url
+        });
+        setData(data);
+        setLoading(false);
+        dispatch(historyAction(requestParams));
       }
-    } else if (
-      requestParams.method === "GET" 
-    ) {
-      const json = await fetch(requestParams.url);
-      const data = await json.json();
-      this.setState({ data });
     }
-    const headers = `{"Content-Type": "application/json"}`; //mok passing headers :/
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestParams]);
 
-    this.setState({ headers, requestParams, shown: true });
-  };
-
-  render() {
-    return (
-      <React.Fragment>
-        <Header />
-        <section style={{ display: "flex", justifyContent: "space-around" }}>
-          <div>
-            <Form handleApiCall={this.callApi} />
-            <ul>
-              <li>
-                <div>Request Method: {this.state.requestParams.method}</div>
-                <div>URL: {this.state.requestParams.url}</div>
-              </li>
-            </ul>
-          </div>
-          {this.state.shown && (
-            <div>
-              <Results data={this.state.data} headers={this.state.headers} />
-            </div>
-          )}
-        </section>
-        <Footer />
-      </React.Fragment>
-    );
+  async function callApi(formData, requestBody) {
+    setLoading(true);
+    setRequestBody(requestBody);
+    setRequestParams(formData);
   }
+
+  return (
+    <React.Fragment>
+      <Header />
+      {state.history.length ? <History history={state.history} /> : null}
+      <Form handleApiCall={callApi} />
+      {loading ? <BeatLoader loading /> : <Results data={data} />}
+      <Footer />
+    </React.Fragment>
+  );
 }
 
 export default App;
